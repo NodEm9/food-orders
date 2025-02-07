@@ -15,8 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = require("../config");
-const dotenv_1 = require("dotenv");
-(0, dotenv_1.config)();
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mongoose_1.default.connect(config_1.MONGO_URI);
