@@ -121,12 +121,10 @@ const AddFood = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             });
             yield vendor.foods.push(food);
             const saveFood = yield vendor.save();
-            res.json(saveFood);
-        }
-        else {
-            res.json({ message: 'Something went wrong!' });
+            return res.json(saveFood);
         }
     }
+    return res.json({ message: 'Something went wrong!' });
 });
 exports.AddFood = AddFood;
 const GetFood = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

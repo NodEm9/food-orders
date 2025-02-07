@@ -117,11 +117,12 @@ export const AddFood = async (
 
 			await vendor.foods.push(food);
 			const saveFood = await vendor.save();
-			res.json(saveFood);
-		} else {
-			res.json({ message: 'Something went wrong!' });
+
+			return res.json(saveFood);
 		}
 	}
+
+	return res.json({ message: 'Something went wrong!' });
 }
 
 export const GetFood = async (req: Request, res: Response, next: NextFunction) => {

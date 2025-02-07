@@ -5,7 +5,7 @@ const getEnv = (key: string, defaultValue?: string) => {
     throw new Error(`Environment variable ${key} is not set.`);
   }
 
-  return value; 
+  return value;   
 }; 
 
 export const MONGO_URI = getEnv("MONGO_URI");
