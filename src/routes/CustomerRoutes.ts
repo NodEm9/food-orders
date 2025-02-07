@@ -22,6 +22,5 @@ router.get('/otp', async (req, res, next) => { RequestOtp(req, res, next) });
 router.get('/profile', async (req, res, next) => { GetCustomerProfile(req, res, next) });
 router.patch('/profile', async (req, res, next) => { EditCustomerProfile(req, res, next) });
 
-// router.delete('/profile');
 
 export { router as CustomerRoute };

@@ -21,14 +21,14 @@ export const validatePassword = async (
 }
 
 export const GenerateSignature = (payLoad: AuthPayload) => {
-	return jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1d' });
+	return jwt.sign(payLoad, process.env.JWT_SECRET, { expiresIn: '1d' });
 
 }
 
 export const ValidateSignature = async (req: Request) => {
 	const signature = req.headers.authorization;
 	if (signature) {
-		const payload = jwt.verify(signature.split(' ')[1], JWT_SECRET) as AuthPayload
+		const payload = jwt.verify(signature.split(' ')[1], process.env.JWT_SECRET) as AuthPayload
 		req.user = payload;
 
 		return true;
