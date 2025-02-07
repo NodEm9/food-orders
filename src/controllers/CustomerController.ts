@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { plainToClass } from 'class-transformer';
-import { CreateCustomerInputs, UserLoginInputs, EditCustomerProfileInputs } from '../dto/Customer.dto';
+import {
+	CreateCustomerInputs,
+	UserLoginInputs,
+	EditCustomerProfileInputs
+} from '../dto/Customer.dto';
 import { validate, } from 'class-validator';
 import {
 	GenerateOtp,
@@ -154,7 +158,6 @@ export const RequestOtp = async (req: Request, res: Response, next: NextFunction
 
 export const GetCustomerProfile = async (req: Request, res: Response, next: NextFunction) => {
 	const customer = req.user;
-
 	if (customer) {
 		const profile = await Customer.findById(customer._id);
 		if (profile) return res.status(200).json(profile);

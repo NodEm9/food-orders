@@ -1,4 +1,5 @@
 import express from 'express';
+import "dotenv/config";
 import App from './services/ExpressApp';
 import dbConnection from './services/Database';
 import { PORT } from './config';

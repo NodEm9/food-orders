@@ -1,7 +1,7 @@
+import "dotenv/config";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { VendorPayload } from '../dto';
-import { JWT_SECRET } from '../config';
+import { JWT_SECRET } from "../config"; 
 import { Request } from 'express';
 import { AuthPayload } from '../dto/Auth.dto';
 
