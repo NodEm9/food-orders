@@ -103,6 +103,7 @@ export const AddFood = async (
 		if (vendor !== null) {
 			const files = req.files as [Express.Multer.File];
 			const images = files.map((files: Express.Multer.File) => files.filename);
+			
 			const food = await Food.create({
 				vendorId: vendor.id,
 				name: name,

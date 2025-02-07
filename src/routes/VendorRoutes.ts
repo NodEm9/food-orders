@@ -19,14 +19,14 @@ const imageStorage = multer.diskStorage({
 		cb(null, 'images');
 	},
 	filename: function (req, file, cb) { 
-		cb(null, file.originalname);
+		cb(null, new Date().toISOString()+"_"+file.originalname);
 	}
 });
 
 const images = multer({ storage: imageStorage }).array('images', 10);
 
 router.post('/login', VendorLogin);
- 
+
 router.use(Authenticate);
 router.get('/profile', GetVendorProfile);
 router.patch('/profile', UpdateVendorProfile);
