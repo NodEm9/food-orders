@@ -50,3 +50,8 @@ export interface CustomerPayload {
 	verified: boolean;
 }
 
+
+export interface OrderInputs {
+	_id: string;
+	unit: number;
+}
