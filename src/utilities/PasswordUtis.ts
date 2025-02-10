@@ -1,9 +1,8 @@
 import "dotenv/config";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from "../config"; 
 import { Request } from 'express';
-import { AuthPayload } from '../dto/Auth.dto';
+import { AuthPayload } from '../dto';
 
 export const GenerateSalt = async (): Promise<string> => {
 	return await bcrypt.genSalt(10);

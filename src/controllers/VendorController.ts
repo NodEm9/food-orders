@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { EditVendorInput, VendorLoginInput } from '../dto';
+import { CreateOfferInput, EditVendorInput, VendorLoginInput } from '../dto';
 import { FindVendor } from './AdminController';
 import { GenerateSignature, validatePassword } from '../utilities';
-import { CreateFoodInput } from '../dto/Food.dto';
-import { Food } from '../models/Food';
-import { Order } from '../models/Order';
+import { CreateFoodInput } from '../dto';
+import { Food, Offer, Order } from '../models';
 
 export const VendorLogin = async (
 	req: Request, res: Response, next: NextFunction
@@ -84,14 +83,27 @@ export const UpdateVendorCoverageImage = async (req: Request, res: Response, nex
 
 export const UpdateVendorService = async (req: Request, res: Response, next: NextFunction) => {
 	const user = req.user;
+
+	const { lat, lng } = req.body;
+
 	if (user) {
 		const existingVendor = await FindVendor({ _id: user._id });
 		if (existingVendor !== null) {
 			existingVendor.serviceAvailable = !existingVendor.serviceAvailable;
+
+			if (lat && lng) {
+				existingVendor.lat = lat;
+				existingVendor.lng = lng;
+			}
+
 			const saveVendor = await existingVendor.save();
-			res.json(saveVendor);
+			return res.json(saveVendor);
 		}
+
+		return res.json(existingVendor);
 	}
+
+	return res.json({ message: 'Vendor information not found!' });
 }
 
 export const AddFood = async (
@@ -142,7 +154,7 @@ export const GetCurrentOrders = async (req: Request, res: Response, next: NextFu
 	const user = req.user;
 
 	if (user) {
-		const orders = await Order.find({ vendorId: user._id }).populate('items.food');
+		const orders = await Order.find().populate('items.food');
 		if (orders !== null) {
 			return res.status(200).json(orders);
 		}
@@ -175,11 +187,119 @@ export const GetOrderDetails = async (req: Request, res: Response, next: NextFun
 	const orderId = req.params.id;
 
 	if (orderId) {
-		const order = await Order.findById(orderId).populate('items.food');
-		if (order !== null) return res.status(200).json(order);
-
+		const order = await Order.findById({ _id: orderId }).populate('items.food');
+		if (order !== null) {
+			return res.status(200).json(order);
+		}
+ 
 	}
 
 	return res.json({ message: 'Orders not found!' });
-	
+
+}
+
+
+export const AddOffer = async (
+	req: Request, res: Response, next: NextFunction
+) => {
+	const user = req.user;
+	const vendorId = { _id: user._id };
+
+	if (user) {
+		const { title, description, offerType, offerAmount, startDate, endDate, promoCode, promoType, pincode, bank, bins, minValue, isActive } = <CreateOfferInput>req.body;
+
+		const vendor = await FindVendor(vendorId);
+
+		if (vendor) {
+			const offer = await Offer.create({
+				offerType,
+				vendors: vendor,
+				title,
+				description,
+				minValue,
+				offerAmount,
+				startDate,
+				endDate,
+				promoCode,
+				promoType,
+				bank,
+				bins,
+				pincode,
+				isActive
+			});
+
+			console.log(offer);
+			return res.json(offer);
+		}
+	}
+
+	return res.json({ message: 'Create Offer Unsuccessful!' });
+}
+
+export const GetOffers = async (req: Request, res: Response, next: NextFunction) => {
+	const user = req.user;
+
+	if (user) {
+		let currentOffers = [];
+		const offers = await Offer.find().populate('vendors');
+
+		if (offers) {
+
+			offers.map((item) => {
+				if (item.vendors) {
+					item.vendors.map((vendor) => {
+						if (vendor._id.toString() === user._id) {
+							currentOffers.push(item);
+						}
+					});
+				}
+
+				if (item.offerType === 'GENERIC') {
+					currentOffers.push(item);
+				}
+			})
+		}
+
+		return res.json(currentOffers);
+	}
+
+	return res.json({ message: 'Offers not available!' });
+}
+export const EditOffer = async (req: Request, res: Response, next: NextFunction) => {
+	const user = req.user;
+	const offerId = req.params.id;
+	const vendorId = { _id: user._id };
+
+	if (user) {
+		const { title, description, offerType, offerAmount, startDate, endDate, promoCode, promoType, pincode, bank, bins, minValue, isActive } = <CreateOfferInput>req.body;
+
+		const currentOffers = await Offer.findById(offerId);
+
+		if (currentOffers) {
+
+			const vendor = await FindVendor(vendorId);
+
+			if (vendor) {
+				currentOffers.offerType = offerType;
+				currentOffers.title = title;
+				currentOffers.description = description;
+				currentOffers.minValue = minValue;
+				currentOffers.offerAmount = offerAmount;
+				currentOffers.startDate = startDate;
+				currentOffers.endDate = endDate;
+				currentOffers.promoCode = promoCode;
+				currentOffers.promoType = promoType;
+				currentOffers.bank = bank;
+				currentOffers.bins = bins;
+				currentOffers.pincode = pincode;
+				currentOffers.isActive = isActive;
+
+				const result = await currentOffers.save();
+				console.log(result);
+
+				return res.json(result);
+			}
+		}
+	}
+	return res.json({ message: 'Unable to Edit Offer!' })
 }

@@ -1,7 +1,5 @@
 import "dotenv/config";
 import mongoose from "mongoose";
-import { MONGO_URI } from "../config";
-
 
 export default async () => {
 	try {

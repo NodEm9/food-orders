@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CreateVendorInput } from '../dto';
-import { Vendor } from '../models';
+import { DeliveryUser, Transaction, Vendor } from '../models';
 import { GeneratePassword, GenerateSalt } from '../utilities';
 import { FindVendorProps } from '../dto';
 
@@ -40,6 +40,9 @@ export const CreateVendor = async (
 		salt: salt,
 		serviceAvailable: false,
 		coverImage: [],
+		foods: [],
+		lat: 0,
+		lng: 0
 	})
 
 	res.json(createVendor);
@@ -51,9 +54,10 @@ export const GetVendors = async (
 ) => {
 	const vendors = await Vendor.find();
 	if (vendors !== null) {
-		res.json(vendors);
+		return res.json(vendors);
 	}
-	res.status(200).json({ message: "Returning all vendor records" });
+
+	return res.status(200).json({ message: "Returning all vendor records" });
 }
 
 export const GetVendorById = async (
@@ -66,4 +70,58 @@ export const GetVendorById = async (
 	}
 
 	res.json({ message: "Vendor not found" });
+}
+
+export const GetTransactions = async (
+	req: Request, res: Response, next: NextFunction
+) => {
+
+	const transaction = await Transaction.find();
+
+	if (transaction) {
+		return res.status(200).json(transaction);
+	}
+
+	res.json({ message: "Transaction not available" });
+}
+
+export const GetTransactionById = async (
+	req: Request, res: Response, next: NextFunction
+) => {
+	const id = req.params.id;
+	const transaction = await Transaction.findById(id);
+
+	if (transaction) {
+		return res.status(200).json(transaction);
+	}
+
+	res.json({ message: "Transaction not available" });
+}
+
+export const VerifyDeliveryUser = async (req: Request, res: Response, next: NextFunction) => {
+	const { _id, status } = req.body;
+
+	if (_id) {
+		
+		const profile = await DeliveryUser.findById(_id);
+
+		if (profile) {
+			profile.verified = status;
+			const result = await profile.save();
+
+			return res.status(200).json(result);
+		}
+	}
+
+	return res.status(400).json({ message: 'Unable to verify delivery user!' });
+}
+export const  GetDeliveryUsers = async (req: Request, res: Response, next: NextFunction) => {
+
+		const deliveryUsers = await DeliveryUser.find();
+
+		if (deliveryUsers) {
+			return res.status(200).json(deliveryUsers);
+		}
+
+	return res.status(400).json({ message: 'No delivery user found!' });
 }

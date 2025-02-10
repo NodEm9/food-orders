@@ -32,3 +32,20 @@ export type FindVendorProps = {
 	_id?: string;
 	email?: string;
 }
+
+export interface CreateOfferInput {
+	offerType: string;
+	vendors: [any]
+	title: string;
+	description: string;
+	minValue: number;
+	offerAmount: number;
+	startDate: Date;
+	endDate: Date;
+	promoCode: string;
+	promoType: string; // USER / ALL / BANK / CARD 
+	bank: [any];
+	bins: [any];
+	pincode: string;
+	isActive: boolean;
+}
